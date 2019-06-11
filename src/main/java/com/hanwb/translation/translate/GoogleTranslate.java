@@ -14,18 +14,21 @@ import com.alibaba.fastjson.JSONArray;
 import com.hanwb.model.Message;
 import com.hanwb.translation.operate.DownloadOperate;
 
-public class GoogleTranslate implements Translate{
+public class GoogleTranslate implements Translate {
 
     private String tkk = "429420.603232582";    // https://translate.google.cn 页面源码中可以获取（tkk），可以长期使用所以没做更新
 
     public Message translate(String source, String sourceCode, String targetCode) {
+    	
         Message message = new Message();
         message.setSourceCode(sourceCode);
         message.setTargetCode(targetCode);
         message.setSourceMsg(source);
         try {
             String translateUrl = getUrl(source, sourceCode, targetCode);
+            
             String returnMsg = DownloadOperate.download(translateUrl);
+            
             JSONArray l1 = JSON.parseArray(returnMsg);
             if (l1 == null || l1.isEmpty()) return message;
             JSONArray l2 = l1.getJSONArray(0);
@@ -48,13 +51,16 @@ public class GoogleTranslate implements Translate{
     }
 
     private String getUrl(String source, String sourceCode, String targetCode) throws UnsupportedEncodingException {
+    	
         String tk = getTk(source);
         StringBuilder sb = new StringBuilder();
         source = URLEncoder.encode(source, "UTF-8");
+        
         sb.append("https://translate.google.cn/translate_a/single?client=webapp&dt=t&sl=").append(sourceCode)
                 .append("&tl=").append(targetCode)
                 .append("&tk=").append(tk)
                 .append("&q=").append(source);
+        
         return sb.toString();
     }
 
@@ -110,9 +116,5 @@ public class GoogleTranslate implements Translate{
             "    a %= 1E6;\n" +
             "    return c + (a.toString() + \".\" + (a ^ b))\n" +
             "};\n";
-
-    public static void main(String[] args) {
-        GoogleTranslate googleTranslate = new GoogleTranslate();
-        System.out.println(googleTranslate.translate("一拍即合的想法，韩寒给取的名。 \n“这个节目，纯粹是我们聊天聊出来的。”", "zh-CN", "en"));
-    }
+    
 }
